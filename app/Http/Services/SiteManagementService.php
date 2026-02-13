@@ -31,23 +31,6 @@ class SiteManagementService
         });
     }
 
-    public function updateSite(int $id, array $data, array $images = []): Site
-    {
-        $site = Site::findOrFail($id);
-
-        return DB::transaction(function () use ($site, $data, $images) {
-            $site->update($data);
-
-            // Ajouter de nouvelles images si fournies
-            if (!empty($images)) {
-                $this->attachPhotos($site, $images);
-            }
-
-            return $site;
-        });
-    }
-
-   
     public function attachPhotos(Site $site, array $images): void
     {
         $uploadedFiles = $this->fileService->uploadMultiple($images, 'sites');
@@ -62,46 +45,10 @@ class SiteManagementService
         }
     }
 
-    public function detachPhoto(Site $site, int $photoId): bool
+    public function findNearbySites(float $lat, float $lon, float $radius)
     {
-        $photo = $site->photos()->find($photoId);
-
-        if (!$photo) {
-            return false;
-        }
-
-        // Extraire le path depuis l'URL
-        $path = str_replace('/storage/', '', $photo->url);
-
-        // Supprimer le fichier
-        $this->fileService->delete($path);
-
-        // Détacher et supprimer la photo
-        $site->photos()->detach($photoId);
-        $photo->delete();
-
-        return true;
-    }
-
-    /**
-     * Remplace toutes les photos d'un site
-     */
-    public function replacePhotos(Site $site, array $images): void
-    {
-        // Supprimer les anciennes photos
-        foreach ($site->photos as $photo) {
-            $this->detachPhoto($site, $photo->id);
-        }
-
-        // Ajouter les nouvelles
-        if (!empty($images)) {
-            $this->attachPhotos($site, $images);
-        }
-    }
-
-    public function getNearSites(float $lat, float $lon, float $radius)
-    {
-        // Formule Haversine pour calculer la distance
+        /* On effectue directement le calcul de distance dans la base de données, au lieu de récuperer tous les
+        sites et de calculer la distance dans le code.*/
         return Site::selectRaw("
             *,
             (6371 * acos(

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Une classe utilitaire pour la gestion des réponses API*/
+
 namespace App\Helpers;
 
 use App\Utils\RestServiceStatusCode;

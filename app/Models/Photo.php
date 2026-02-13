@@ -19,6 +19,9 @@ class Photo extends Model
         'size',
     ];
 
+    protected $hidden = ['pivot', 'created_at'];
+
+
     protected function casts(): array
     {
         return [

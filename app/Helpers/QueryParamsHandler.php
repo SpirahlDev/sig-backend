@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Author : Alloué Yapi Anselme
+ * Date : 31/05/2025
+ * Version : 4.1.0
+ * Description : Gestionnaire avancé de paramètres de requête pour Laravel et Eloquent.
+ * Elle permet de gérer le filtrage, la recherche, le tri et surtout la pagination des résultats.
+  */
+
 namespace App\Helpers;
 
 use Carbon\Carbon;

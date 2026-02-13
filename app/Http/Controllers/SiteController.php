@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Utils\RestServiceStatusCode;
 
+/**
+ * 
+ * La classe est un contrôleur pour la gestion des sites. Elle se base sur la classe
+ * BaseCrudController, qui gère les opérations CRUD de base automatiquement.
+ * 
+ */
 class SiteController extends BaseCrudController
 {
 
@@ -27,7 +33,7 @@ class SiteController extends BaseCrudController
         'site_creation_date' => 'nullable|date',
         'site_type_id' => 'nullable|exists:site_type,id',
         'images' => 'required|array',
-        'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
+        'images.*' => 'image|mimes:jpeg,png,jpg,webp'
     ];
 
     protected $updateRules = [
@@ -40,19 +46,49 @@ class SiteController extends BaseCrudController
         'site_type_id' => 'nullable|exists:site_type,id',
     ];
 
-    protected $allowedFields = ['id', 'name', 'description', 'lat', 'lon', 'city', 'site_creation_date', 'site_type_id', 'created_at'];
+    /**
+     * allowedFields définit les champs qui seront retournés dans les résultats.
+     */
+    protected $allowedFields = ['id', 'name', 'description', 
+        'lat', 'lon', 'city', 
+        'site_creation_date', 
+        'site_type_id', 'created_at'
+    ];
 
+    /**
+     * 
+     * allowedFilters définit les champs sur lesquels on pourra effectuer de filtrage.
+     * Elle s'utilise ainsi par exemple : sites?filter[city]=Yamoussoukro
+     * 
+     */
     protected $allowedFilters = ['name', 'city', 'site_creation_date', 'site_type_id'];
 
-    protected $searchableFields = ['name', 'description', 'city'];
+    /**
+     * 
+     * searchableFields définit les champs sur lesquels seront effectuer la recherche quand on fera un
+     * sites?search=Abidjan par exemple
+     * 
+     */
+    protected $searchableFields = ['name', 'description', 'city']; 
 
-    public function getQuery(): Builder
-    {
-        return $this->getModel()->query()->with(['siteType', 'photos']);
+    /**
+     * 
+     * Cette fonction est une rédéfinition de getQuery de la classe BaseCrudController afin
+     * d'ajouter des relations et des select spécifiques
+     * 
+     */
+    public function getQuery(): Builder{
+
+        return $this->getModel()->query()->with(['siteType','photos']);
     }
 
-    public function store(Request $request)
-    {
+    /**
+     * 
+     * Cette fonction est une rédéfinition de store de la classe BaseCrudController afin
+     * d'ajouter des relations et des select spécifiques
+     * 
+     */ 
+    public function store(Request $request){
         $request->validate($this->storeRules);
 
         if ($request->site_type_id) {
@@ -78,22 +114,26 @@ class SiteController extends BaseCrudController
         );
     }
 
-    public function deletePhoto(Site $site, int $photoId)
-    {
-        $deleted = $this->siteService->detachPhoto($site, $photoId);
 
-        if (!$deleted) {
-            return ApiResponse::respond(
-                'Photo not found',
-                RestServiceStatusCode::ERROR_RESSOURCE_NOT_FOUND,
-                404
-            );
-        }
+    public function nearby(Request $request){
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lon' => 'required|numeric',
+            'radius' => 'nullable|integer|min:1|max:100000',
+        ]);
+
+        $sites = $this->siteService->findNearbySites(
+            $request->lat,
+            $request->lon,
+            $request->radius ?? 20
+        );
 
         return ApiResponse::respond(
-            'Photo deleted successfully',
+            'Sites found successfully',
             RestServiceStatusCode::SUCCESS_OPERATION,
-            200
+            200,
+            $sites
         );
     }
+
 }

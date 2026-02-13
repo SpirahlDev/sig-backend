@@ -7,7 +7,7 @@
  * Description : Classe abstraite implémentant les fonctionnalités CRUD de base
  * pour n'importe quel modèle Eloquent.
  * À partir de cette classe, je peux définir les règles de validation, les champs autorisés pour l'affichage,
- * les champs autorisés pour le filtrage etc, d'une resource
+ * les champs autorisés pour le filtrage etc d'une resource, et automatiser certaines opération CRUD.
  */
 
 namespace App\Http\Controllers;
