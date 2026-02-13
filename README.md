@@ -16,38 +16,40 @@ L'environnement doit disposer des composants suivants :
 
 - **PHP** : version 8.2 ou supérieure
 - **Composer** : gestionnaire de dépendances PHP
-- **Node.js & NPM** : compilation des assets (si applicable)
-- **MySQL** ou driver compatible Laravel
+- **MySQL** 
 
 ### 2. Configuration automatique
 
-Un script automatise les étapes de configuration initiales (dépendances, fichier `.env`, clé d'application et migrations) :
+Un script automatise une partie des étapes de configuration (dépendances, fichier `.env`, clé d'application, migrations et build frontend). **Note** : ce script n'exécute pas les seeders ni `storage:link`, utilisez la procédure manuelle pour une installation complète :
 
 ```bash
 composer setup
 ```
 
-### 3. Configuration manuelle (Alternative)
+### 3. Mais comme alternative vous pouvez le faire manuellement :
 
 Étapes pour une installation manuelle :
 
 1.  **Installation des dépendances** :
     ```bash
     composer install
-    npm install
     ```
 2.  **Configuration de l'environnement** :
     ```bash
     cp .env.example .env
     ```
     _Note : Configurer les accès à la base de données dans le fichier `.env`._
-3.  **Généréation de la clé d'application** :
+3.  **Génération de la clé d'application** :
     ```bash
     php artisan key:generate
     ```
 4.  **Exécution des migrations** :
     ```bash
-    php artisan migrate
+    php artisan migrate --seed
+    ```
+5.  **Création des liens symboliques** :
+    ```bash
+    php artisan storage:link
     ```
 
 ---
