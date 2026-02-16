@@ -6,6 +6,8 @@ API backend du projet de géolocalisation de patrimoine. Cette application, dév
 Nous avons utilisé Laravel car il permet de développer rapidement tout en gardant une assez bonne organisation du code. Il propose une architecture MVC claire, comme demandé dans les spécifications.
 Ayant déjà développé auparavant des outils pour mettre en place rapidement des contrôleurs CRUD et gérer la pagination, utiliser Laravel m’a permis d’avancer efficacement sur le backend.
 
+## Approche 
+
 ## Installation
 
 Procédure de configuration pour un nouvel environnement de développement.
@@ -63,6 +65,48 @@ php artisan serve
 ```
 
 L'API est accessible sur : [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Lancement avec Docker
+
+### Prérequis
+
+- **Docker** et **Docker Compose** installés
+
+### Configuration
+
+1. **Configurer les variables d'environnement** :
+   ```bash
+   cp .env.example .env
+   ```
+   Modifier le fichier `.env` avec les valeurs appropriées (notamment `DB_PASSWORD`).
+
+2. **Lancer les conteneurs** :
+   ```bash
+   docker compose up --build -d
+   ```
+
+3. **Initialiser l'application** (première fois uniquement) :
+   ```bash
+   docker exec -it sig-backend-app php artisan storage:link
+   docker exec -it sig-backend-app php artisan migrate --seed
+   ```
+
+4. **Accéder à l'application** :
+   L'API est accessible sur : [http://localhost:8000](http://localhost:8000)
+
+### Commandes utiles
+
+| Commande | Description |
+| :------- | :---------- |
+| `docker compose up -d` | Lancer en arrière-plan |
+| `docker compose down` | Arrêter les conteneurs |
+| `docker compose down -v` | Arrêter et supprimer les volumes (reset DB) |
+| `docker compose logs -f app` | Voir les logs de l'application |
+| `docker exec -it sig-backend-app sh` | Accéder au shell du conteneur |
+| `docker exec -it sig-backend-app php artisan migrate` | Exécuter les migrations |
+| `docker exec -it sig-backend-app php artisan db:seed` | Exécuter les seeders |
 
 ---
 
